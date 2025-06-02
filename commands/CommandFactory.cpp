@@ -3,6 +3,7 @@
 #include <sstream>
 #include "LoginCommand.h"
 #include "LogoutCommand.h"
+#include "CreateAccountCommand.h"
 
 Command* CommandFactory::create(const String& input) {
     std::stringstream ss(input.getElements());
@@ -17,6 +18,12 @@ Command* CommandFactory::create(const String& input) {
         return new LoginCommand(username, password);
     } else if (cmd == "logout") {
         return new LogoutCommand();
+    } else if (cmd == "create-account") {
+        String username, password;
+        ss >> std::ws >> username;
+        ss >> std::ws >> password;
+
+        return new CreateAccountCommand(username, password);
     }
 
     return nullptr;
