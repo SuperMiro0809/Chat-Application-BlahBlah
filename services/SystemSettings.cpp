@@ -7,24 +7,19 @@ SystemSettings& SystemSettings::getInstance() {
 }
 
 SystemSettings::SystemSettings() {
-    setFileMode(TEXT);
-}
-
-void SystemSettings::reloadPaths() {
-    const char* ext = (mode == TEXT ? ".txt" : ".dat");
-
-    usersFile = "users" + String(ext);
+    setFileMode(BINARY);
 }
 
 void SystemSettings::setFileMode(FileMode newMode) {
     mode = newMode;
-    reloadPaths();
 }
 
 FileMode SystemSettings::getFileMode() const {
     return mode;
 }
 
-const String& SystemSettings::getUsersFile() const {
-    return usersFile;
+String SystemSettings::getDbFileName(const String& dbName) const {
+    const char* ext = (mode == TEXT ? ".txt" : ".dat");
+
+    return dbName + ext;
 }
