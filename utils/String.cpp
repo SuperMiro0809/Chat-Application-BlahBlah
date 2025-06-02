@@ -289,7 +289,7 @@ bool operator==(const String& lhs, const char* str) {
 }
 
 bool operator==(const char* str, const String& rhs) {
-    return std::strcmp(str, rhs.getElements());
+    return std::strcmp(str, rhs.getElements()) == 0;
 }
 
 bool operator!=(const String& lhs, const String& rhs) {

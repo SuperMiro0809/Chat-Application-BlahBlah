@@ -10,13 +10,9 @@ enum FileMode {
 class SystemSettings {
     FileMode mode;
 
-    String usersFile;
-
     static SystemSettings instance;
 
     SystemSettings();
-
-    void reloadPaths();
 
     public:
         static SystemSettings& getInstance();
@@ -25,5 +21,5 @@ class SystemSettings {
 
         FileMode getFileMode() const;
 
-        const String& getUsersFile() const;
+        String getDbFileName(const String& dbName) const;
 };
