@@ -14,7 +14,7 @@ void LoginCommand::execute(System& system) {
         throw std::logic_error("Command forbidden!");
     }
 
-    UsersDatabase usersDb(String("../users"));
+    UsersDatabase usersDb("../users");
     User* user = usersDb.getUser(username);
 
     if (!user) {

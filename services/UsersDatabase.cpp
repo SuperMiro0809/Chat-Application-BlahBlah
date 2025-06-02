@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include "../services/SystemSettings.h"
 
-UsersDatabase::UsersDatabase(const String& dbName): Database(dbName) {}
+UsersDatabase::UsersDatabase(const char* dbName): Database(dbName) {}
 
 void UsersDatabase::writeUserToTextFile(unsigned int id, const String& username, const String& password, const char* role) const {
     std::ofstream ofs((dbName + ".txt").getElements(), std::ios::app);
