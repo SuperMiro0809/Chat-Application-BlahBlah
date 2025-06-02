@@ -1,5 +1,6 @@
 #include "LoginCommand.h"
 
+#include <stdexcept>
 #include "../services/UsersDatabase.h"
 
 LoginCommand::LoginCommand(const String& username, const String& password):
