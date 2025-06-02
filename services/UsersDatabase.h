@@ -9,7 +9,7 @@ class UsersDatabase: public Database {
     void writeUserToBinaryFile(unsigned int id, const String& username, const String& password, const char* role) const;
 
     public:
-        UsersDatabase(const String& dbName);
+        UsersDatabase(const char* dbName);
 
         void addNewUser(const String& username, const String& password, const char* role) const;
 
