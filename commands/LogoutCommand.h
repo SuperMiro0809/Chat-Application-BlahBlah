@@ -6,5 +6,5 @@ class LogoutCommand: public Command {
     public:
         LogoutCommand() = default;
 
-        void execute(System& system) override;
+        void execute(System& system) const override;
 };

@@ -6,7 +6,7 @@ CreateAccountCommand::CreateAccountCommand(const String& username, const String&
     username(username),
     password(password) {}
 
-void CreateAccountCommand::execute(System& system) {
+void CreateAccountCommand::execute(System& system) const {
     const User* currUser = system.getCurrentUser();
 
     if (currUser) {

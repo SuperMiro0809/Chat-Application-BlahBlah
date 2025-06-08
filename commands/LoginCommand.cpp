@@ -7,7 +7,7 @@ LoginCommand::LoginCommand(const String& username, const String& password):
     username(username),
     password(password) {}
 
-void LoginCommand::execute(System& system) {
+void LoginCommand::execute(System& system) const {
     const User* currUser = system.getCurrentUser();
 
     if (currUser) {
