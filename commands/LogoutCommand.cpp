@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include "../models/User.h"
 
-void LogoutCommand::execute(System& system) {
+void LogoutCommand::execute(System& system) const {
     const User* currUser = system.getCurrentUser();
 
     if (!currUser) {

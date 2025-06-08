@@ -10,5 +10,5 @@ class LoginCommand: public Command {
     public:
         LoginCommand(const String& username, const String& password);
 
-        void execute(System& system) override;
+        void execute(System& system) const override;
 };
