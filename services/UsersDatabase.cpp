@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include "../models/Admin.h"
 #include "../services/SystemSettings.h"
 
 UsersDatabase::UsersDatabase(const char* dbName): Database(dbName) {}
@@ -90,7 +91,12 @@ User* UsersDatabase::getUser(const String& username) const {
 
             if (usernameStr == username) {
                 DBFile.close();
-                return new User(usernameStr, passwordStr);
+                if (roleStr == "Admin") {
+                    unsigned int currId = std::atoi(idStr.getElements());
+                    return new Admin(currId, username, passwordStr);
+                } else {
+                    return new User(usernameStr, passwordStr);
+                }
             }
         }
     } else {
@@ -144,7 +150,13 @@ User* UsersDatabase::getUser(const String& username) const {
             currRole[len] = '\0';
 
             if (currUsername == username) {
-                User* user = new User(currUsername, currPassword);
+                User* user = nullptr;
+
+                if (std::strcmp(currRole, "Admin") == 0) {
+                    user = new Admin(currId, currUsername, currPassword);
+                } else {
+                    user = new User(currUsername, currPassword);
+                }
 
                 delete[] currUsername; delete[] currPassword; delete[] currRole;
                 DBFile.close();
