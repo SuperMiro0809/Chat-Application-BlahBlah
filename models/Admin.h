@@ -9,4 +9,6 @@ class Admin: public User {
         Admin(unsigned int id, const String& username, const String& password);
 
         Admin(unsigned int id, const char* username, const char* password);
+
+        UserRole getRole() const override;
 };

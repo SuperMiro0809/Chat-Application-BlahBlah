@@ -11,3 +11,7 @@ const String& User::getUsername() const {
 bool User::doPasswordsMatch(const String& checkPass) const {
     return password == checkPass;
 }
+
+UserRole User::getRole() const{
+    return UserRole::User;
+}

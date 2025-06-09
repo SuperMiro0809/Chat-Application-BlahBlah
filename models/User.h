@@ -2,6 +2,11 @@
 
 #include "../utils/String.h"
 
+enum class UserRole {
+    User,
+    Admin
+};
+
 class User {
     String username;
     String password;
@@ -14,4 +19,8 @@ class User {
         const String& getUsername() const;
 
         bool doPasswordsMatch(const String& checkPass) const;
+
+        virtual UserRole getRole() const;
+
+        virtual ~User() = default;
 };
