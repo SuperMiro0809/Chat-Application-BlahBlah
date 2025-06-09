@@ -19,7 +19,9 @@ int main() {
         if (input.empty()) continue;
         if (input == "exit") break;
 
-        if (Command* cmd = CommandFactory::create(input)) {
+        Command* cmd = CommandFactory::create(input);
+
+        if (cmd && cmd->isAllowed(system)) {
             try {
                 cmd->execute(system);
             } catch (const std::logic_error& e) {
@@ -30,7 +32,12 @@ int main() {
 
             delete cmd;
         } else {
-            std::cout << "Invalid command! Please try again" << std::endl;
+            if (!cmd) {
+                std::cout << "Invalid command! Please try again" << std::endl;
+            } else {
+                delete cmd;
+                std::cout << "Not authorized" << std::endl;
+            }
         }
     }
 
