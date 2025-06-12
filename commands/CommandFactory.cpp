@@ -4,6 +4,7 @@
 #include "LoginCommand.h"
 #include "LogoutCommand.h"
 #include "CreateAccountCommand.h"
+#include "FileModeCommand.h"
 
 Command* CommandFactory::create(const String& input) {
     std::stringstream ss(input.getElements());
@@ -24,6 +25,8 @@ Command* CommandFactory::create(const String& input) {
         ss >> std::ws >> password;
 
         return new CreateAccountCommand(username, password);
+    } else if (cmd == "file-mode") {
+        return new FileModeCommand();
     }
 
     return nullptr;
