@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Command.h"
-#include "../services/SystemSettings.h"
 
 class FileModeCommand: public Command {
     public:
