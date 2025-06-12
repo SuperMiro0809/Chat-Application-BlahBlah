@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "services/System.h"
+#include "core/System.h"
 #include "utils/String.h"
 #include "commands/CommandFactory.h"
 #include "commands/Command.h"
@@ -21,7 +21,12 @@ int main() {
 
         Command* cmd = CommandFactory::create(input);
 
-        if (cmd && cmd->isAllowed(system)) {
+        if (!cmd) {
+            std::cout << "Invalid command! Please try again" << std::endl;
+        } else if (!cmd->isAllowed(system)) {
+            delete cmd;
+            std::cout << "Not authorized" << std::endl;
+        } else {
             try {
                 cmd->execute(system);
             } catch (const std::logic_error& e) {
@@ -31,13 +36,6 @@ int main() {
             }
 
             delete cmd;
-        } else {
-            if (!cmd) {
-                std::cout << "Invalid command! Please try again" << std::endl;
-            } else {
-                delete cmd;
-                std::cout << "Not authorized" << std::endl;
-            }
         }
     }
 
