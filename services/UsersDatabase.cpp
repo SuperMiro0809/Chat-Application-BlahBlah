@@ -91,11 +91,12 @@ User* UsersDatabase::getUser(const String& username) const {
 
             if (usernameStr == username) {
                 DBFile.close();
+                unsigned int currId = std::atoi(idStr.getElements());
+
                 if (roleStr == "Admin") {
-                    unsigned int currId = std::atoi(idStr.getElements());
                     return new Admin(currId, username, passwordStr);
                 } else {
-                    return new User(usernameStr, passwordStr);
+                    return new User(currId, usernameStr, passwordStr);
                 }
             }
         }
@@ -155,7 +156,7 @@ User* UsersDatabase::getUser(const String& username) const {
                 if (std::strcmp(currRole, "Admin") == 0) {
                     user = new Admin(currId, currUsername, currPassword);
                 } else {
-                    user = new User(currUsername, currPassword);
+                    user = new User(currId, currUsername, currPassword);
                 }
 
                 delete[] currUsername; delete[] currPassword; delete[] currRole;

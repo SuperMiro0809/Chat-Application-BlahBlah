@@ -1,8 +1,12 @@
 #include "User.h"
 
-User::User(const String& username, const String& password): username(username), password(password) {}
+User::User(unsigned int id, const String& username, const String& password): id(id), username(username), password(password) {}
 
-User::User(const char* username, const char* password): username(username), password(password) {}
+User::User(unsigned int id, const char* username, const char* password): id(id), username(username), password(password) {}
+
+unsigned int User::getId() const {
+    return id;
+}
 
 const String& User::getUsername() const {
     return username;

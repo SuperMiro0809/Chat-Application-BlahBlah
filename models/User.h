@@ -8,13 +8,16 @@ enum class UserRole {
 };
 
 class User {
+    unsigned int id;
     String username;
     String password;
 
     public:
-        User(const String& username, const String& password);
+        User(unsigned int id, const String& username, const String& password);
 
-        User(const char* username, const char* password);
+        User(unsigned int id, const char* username, const char* password);
+
+        unsigned int getId() const;
 
         const String& getUsername() const;
 
