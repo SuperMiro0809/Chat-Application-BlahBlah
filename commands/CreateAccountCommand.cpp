@@ -1,6 +1,7 @@
 #include "CreateAccountCommand.h"
 
 #include "../services/UsersDatabase.h"
+#include "../core/Constants.h"
 
 CreateAccountCommand::CreateAccountCommand(const String& username, const String& password):
     username(username),
@@ -13,7 +14,7 @@ void CreateAccountCommand::execute(System& system) const {
         throw std::logic_error("Command forbidden!");
     }
 
-    UsersDatabase usersDb("../users");
-    usersDb.addNewUser(username, password, "User");
+    UsersDatabase usersDb(USERS_DB_NAME);
+    usersDb.addNewUser(username, password, USER_NORMAL);
     std::cout << "Account created successfully. Now you can login" << std::endl;
 }

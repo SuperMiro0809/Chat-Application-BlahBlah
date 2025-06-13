@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include "../core/Constants.h"
 
 Database::Database(const char* dbName): dbName(std::strlen(dbName), dbName) {}
 
@@ -27,7 +28,7 @@ unsigned int Database::autoIncrement() const {
 
         std::stringstream ss(line.getElements());
         String idStr;
-        getline(ss, idStr, '|');
+        getline(ss, idStr, FIELD_DELIMITER);
 
         unsigned int currId = std::atoi(idStr.getElements());
 

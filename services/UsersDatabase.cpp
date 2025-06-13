@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include "../models/Admin.h"
 #include "../core/SystemSettings.h"
+#include "../core/Constants.h"
 
 UsersDatabase::UsersDatabase(const char* dbName): Database(dbName) {}
 
@@ -15,9 +16,9 @@ void UsersDatabase::writeUserToTextFile(unsigned int id, const String& username,
         throw std::runtime_error("Error: could not open database file");
     }
 
-    ofs << id << '|'
-        << username << '|'
-        << password << '|'
+    ofs << id << FIELD_DELIMITER
+        << username << FIELD_DELIMITER
+        << password << FIELD_DELIMITER
         << role << '\n';
 
     ofs.close();
@@ -84,16 +85,16 @@ User* UsersDatabase::getUser(const String& username) const {
             std::stringstream ss(line.getElements());
             String idStr, usernameStr, passwordStr, roleStr;
 
-            getline(ss, idStr, '|');
-            getline(ss, usernameStr, '|');
-            getline(ss, passwordStr, '|');
+            getline(ss, idStr, FIELD_DELIMITER);
+            getline(ss, usernameStr, FIELD_DELIMITER);
+            getline(ss, passwordStr, FIELD_DELIMITER);
             getline(ss, roleStr);
 
             if (usernameStr == username) {
                 DBFile.close();
                 unsigned int currId = std::atoi(idStr.getElements());
 
-                if (roleStr == "Admin") {
+                if (roleStr == USER_ADMIN) {
                     return new Admin(currId, username, passwordStr);
                 } else {
                     return new User(currId, usernameStr, passwordStr);
@@ -153,7 +154,7 @@ User* UsersDatabase::getUser(const String& username) const {
             if (currUsername == username) {
                 User* user = nullptr;
 
-                if (std::strcmp(currRole, "Admin") == 0) {
+                if (std::strcmp(currRole, USER_ADMIN) == 0) {
                     user = new Admin(currId, currUsername, currPassword);
                 } else {
                     user = new User(currId, currUsername, currPassword);
@@ -196,8 +197,8 @@ bool UsersDatabase::isUsernameTaken(const String& username) const {
             std::stringstream ss(line.getElements());
             String idStr, usernameStr;
 
-            getline(ss, idStr, '|');
-            getline(ss, usernameStr, '|');
+            getline(ss, idStr, FIELD_DELIMITER);
+            getline(ss, usernameStr, FIELD_DELIMITER);
 
             if (usernameStr == username) {
                 DBFile.close();
