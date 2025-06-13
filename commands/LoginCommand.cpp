@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include "../services/UsersDatabase.h"
+#include "../core/Constants.h"
 
 LoginCommand::LoginCommand(const String& username, const String& password):
     username(username),
@@ -14,7 +15,7 @@ void LoginCommand::execute(System& system) const {
         throw std::logic_error("Command forbidden!");
     }
 
-    UsersDatabase usersDb("../users");
+    UsersDatabase usersDb(USERS_DB_NAME);
     User* user = usersDb.getUser(username);
 
     if (!user) {
@@ -25,7 +26,7 @@ void LoginCommand::execute(System& system) const {
             std::cin >> answer;
 
             if (answer == 'y') {
-                usersDb.addNewUser(username, password, "User");
+                usersDb.addNewUser(username, password, USER_NORMAL);
                 std::cout << "Account created successfully. Now you can login" << std::endl;
                 break;
             } else if (answer == 'n') {

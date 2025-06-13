@@ -4,6 +4,7 @@
 #include <sstream>
 #include "../models/Chat.h"
 #include "../core/SystemSettings.h"
+#include "../core/Constants.h"
 #include "../utils/ChatParticipantsVector.h"
 
 void ChatsDatabase::writeChatToTextFile(unsigned int id, const String& name, const char* type) const {
@@ -67,7 +68,7 @@ const Chat* ChatsDatabase::findIndividualChat(unsigned int userOne, unsigned int
         while (DBFile >> chat) {
             if (chat.getChatType() == ChatType::INDIVIDUAL) {
                 ChatParticipantsVector vector;
-                vector.loadFromFile("../chat_participants", chat.getId());
+                vector.loadFromFile(PARTICIPANTS_DB_NAME, chat.getId());
 
                 bool userOneFound = false;
                 bool userTwoFound = false;

@@ -2,25 +2,26 @@
 
 #include <sstream>
 #include <stdexcept>
+#include "../core/Constants.h"
 
 static const char* toString(ChatType type) {
     switch (type) {
-        case ChatType::INDIVIDUAL: return "Individual";
-        case ChatType::GROUP:      return "Group";
-        default:                    return "Unknown";
+        case ChatType::INDIVIDUAL: return CHAT_INDIVIDUAL;
+        case ChatType::GROUP:      return CHAT_GROUP;
+        default:                   return "Unknown";
     }
 }
 
 static ChatType parseChatType(const String& str) {
-    if (str == "Individual") return ChatType::INDIVIDUAL;
-    if (str == "Group") return ChatType::GROUP;
+    if (str == CHAT_INDIVIDUAL) return ChatType::INDIVIDUAL;
+    if (str == CHAT_GROUP) return ChatType::GROUP;
 
     return ChatType::DEFAULT;
 }
 
 static ChatType parseChatType(const char* str) {
-    if (std::strcmp(str, "Individual") == 0) return ChatType::INDIVIDUAL;
-    if (std::strcmp(str, "Group") == 0) return ChatType::GROUP;
+    if (std::strcmp(str, CHAT_INDIVIDUAL) == 0) return ChatType::INDIVIDUAL;
+    if (std::strcmp(str, CHAT_GROUP) == 0) return ChatType::GROUP;
 
     return ChatType::DEFAULT;
 }
@@ -42,7 +43,7 @@ ChatType Chat::getChatType() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Chat& chat) {
-    os << chat.id << '|' << chat.name << '|' << toString(chat.type);
+    os << chat.id << FIELD_DELIMITER << chat.name << FIELD_DELIMITER << toString(chat.type);
     return os;
 }
 
@@ -55,8 +56,8 @@ std::istream& operator>>(std::istream& is, Chat& chat) {
     std::stringstream ss(line.getElements());
     String idStr, nameStr, typeStr;
 
-    getline(ss, idStr, '|');
-    getline(ss, nameStr, '|');
+    getline(ss, idStr, FIELD_DELIMITER);
+    getline(ss, nameStr, FIELD_DELIMITER);
     getline(ss, typeStr);
 
     chat.id = std::atoi(idStr.getElements());

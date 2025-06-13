@@ -2,25 +2,26 @@
 
 #include <sstream>
 #include "../utils/String.h"
+#include "../core/Constants.h"
 
 static const char* toString(ParticipantTypes type) {
     switch (type) {
-        case ParticipantTypes::MEMBER: return "Member";
-        case ParticipantTypes::ADMIN:  return "Admin";
+        case ParticipantTypes::MEMBER: return PARTICIPANT_MEMBER;
+        case ParticipantTypes::ADMIN:  return PARTICIPANT_ADMIN;
         default:                       return "Unknown";
     }
 }
 
 static ParticipantTypes parseParticipantType(const String& str) {
-    if (str == "Member") return ParticipantTypes::MEMBER;
-    if (str == "Admin") return ParticipantTypes::ADMIN;
+    if (str == PARTICIPANT_MEMBER) return ParticipantTypes::MEMBER;
+    if (str == PARTICIPANT_ADMIN) return ParticipantTypes::ADMIN;
 
     return ParticipantTypes::DEFAULT;
 }
 
 static ParticipantTypes parseParticipantType(const char* str) {
-    if (std::strcmp(str, "Member") == 0) return ParticipantTypes::MEMBER;
-    if (std::strcmp(str, "Admin") == 0) return ParticipantTypes::ADMIN;
+    if (std::strcmp(str, PARTICIPANT_MEMBER) == 0) return ParticipantTypes::MEMBER;
+    if (std::strcmp(str, PARTICIPANT_ADMIN) == 0) return ParticipantTypes::ADMIN;
 
     return ParticipantTypes::DEFAULT;
 }
@@ -50,9 +51,9 @@ unsigned int ChatParticipant::getUserId() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const ChatParticipant& participant) {
-    os << participant.id << '|'
-       << participant.chatId << '|'
-       << participant.userId << '|'
+    os << participant.id << FIELD_DELIMITER
+       << participant.chatId << FIELD_DELIMITER
+       << participant.userId << FIELD_DELIMITER
        << toString(participant.type);
     return os;
 }
@@ -65,9 +66,9 @@ std::istream& operator>>(std::istream& is, ChatParticipant& participant) {
     std::stringstream ss(line.getElements());
     String idStr, chatIdStr, userIdStr, typeStr;
 
-    getline(ss, idStr, '|');
-    getline(ss, chatIdStr, '|');
-    getline(ss, userIdStr, '|');
+    getline(ss, idStr, FIELD_DELIMITER);
+    getline(ss, chatIdStr, FIELD_DELIMITER);
+    getline(ss, userIdStr, FIELD_DELIMITER);
     getline(ss, typeStr);
 
     participant.id = std::atoi(idStr.getElements());

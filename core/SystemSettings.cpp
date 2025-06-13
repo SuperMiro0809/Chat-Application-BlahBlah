@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <stdexcept>
+#include "Constants.h"
 
 SystemSettings SystemSettings::instance;
 
@@ -15,7 +16,7 @@ SystemSettings::SystemSettings() {
 }
 
 void SystemSettings::saveToFile() const {
-    std::ofstream ofs("../settings.txt");
+    std::ofstream ofs(SETTINGS_FILE_PATH);
     if (!ofs.is_open()) {
         throw std::runtime_error("Error: could not open settings file");
     }
@@ -33,7 +34,7 @@ void SystemSettings::saveToFile() const {
 }
 
 FileMode SystemSettings::getFromFile() const {
-    std::ifstream ifs("../settings.txt");
+    std::ifstream ifs(SETTINGS_FILE_PATH);
 
     if (!ifs.is_open()) {
         throw std::runtime_error("Error: could not open settings file");
