@@ -4,7 +4,8 @@
 
 enum FileMode {
     TEXT,
-    BINARY
+    BINARY,
+    DEFAULT = TEXT
 };
 
 class SystemSettings {
@@ -13,6 +14,10 @@ class SystemSettings {
     static SystemSettings instance;
 
     SystemSettings();
+
+    void saveToFile() const;
+
+    FileMode getFromFile() const;
 
     public:
         static SystemSettings& getInstance();
