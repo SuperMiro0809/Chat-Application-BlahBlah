@@ -4,6 +4,7 @@
 constexpr const char* USERS_DB_NAME        = "../users";
 constexpr const char* CHATS_DB_NAME        = "../chats";
 constexpr const char* PARTICIPANTS_DB_NAME = "../chat_participants";
+constexpr const char* MESSAGES_DB_NAME     = "../chat_messages";
 
 // === DB Paths ===
 constexpr const char* SETTINGS_FILE_PATH = "../settings.txt";
