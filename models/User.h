@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../utils/String.h"
+#include "../utils/Vector.hpp"
+#include "../models/Chat.h"
 
 enum class UserRole {
     User,
@@ -12,6 +14,9 @@ class User {
     String username;
     String password;
 
+    Vector<Chat> chats;
+    bool areChatsLoaded = false;
+
     public:
         User(unsigned int id, const String& username, const String& password);
 
@@ -22,6 +27,12 @@ class User {
         const String& getUsername() const;
 
         bool doPasswordsMatch(const String& checkPass) const;
+
+        void loadCriteriaChats();
+
+        bool getAreChatsLoaded() const;
+
+        const Vector<Chat>& getChats() const;
 
         virtual UserRole getRole() const;
 
