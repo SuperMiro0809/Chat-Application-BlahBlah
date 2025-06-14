@@ -23,6 +23,8 @@ class ChatMessage {
 
         unsigned int getChatId() const;
 
+        void print() const;
+
         friend std::ostream& operator<<(std::ostream& os, const ChatMessage& msg);
 
         friend std::istream& operator>>(std::istream& is, ChatMessage& msg);

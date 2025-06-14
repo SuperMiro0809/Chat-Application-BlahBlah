@@ -50,7 +50,7 @@ unsigned int ChatsDatabase::addNewChat(const String& name, const char* type) con
     return nextId;
 }
 
-const Chat* ChatsDatabase::findIndividualChat(unsigned int userOne, unsigned int userTwo) {
+const Chat* ChatsDatabase::findIndividualChat(unsigned int userOne, unsigned int userTwo) const {
     SystemSettings systemSettings = SystemSettings::getInstance();
     FileMode mode = systemSettings.getFileMode();
 
@@ -82,13 +82,71 @@ const Chat* ChatsDatabase::findIndividualChat(unsigned int userOne, unsigned int
                     }
 
                     if (userOneFound && userTwoFound) {
+                        DBFile.close();
                         return new Chat(chat);
                     }
                 }
             }
         }
     } else {
+        // TODO binary
     }
 
+    DBFile.close();
+    return nullptr;
+}
+
+const Chat* ChatsDatabase::findById(unsigned int chatId) const {
+    SystemSettings systemSettings = SystemSettings::getInstance();
+    FileMode mode = systemSettings.getFileMode();
+
+    String fileName = systemSettings.getDbFileName(dbName);
+    std::ifstream DBFile;
+
+    if (mode == FileMode::TEXT) {
+        DBFile.open(fileName.getElements());
+
+        if (!DBFile.is_open()) {
+            throw std::runtime_error("Error: could not open database file");
+        }
+
+        Chat chat;
+        while (DBFile >> chat) {
+            if (chat.getId() == chatId) {
+                DBFile.close();
+                return new Chat(chat);
+            }
+        }
+    } else {
+        DBFile.open(fileName.getElements(), std::ios::binary);
+
+        if (!DBFile.is_open()) {
+            throw std::runtime_error("Error: could not open database file");
+        }
+
+        while (!DBFile.eof()) {
+            unsigned int id;
+            unsigned int nameLen;
+            unsigned int typeLen;
+
+            DBFile.read((char*)(&id), sizeof(id));
+            DBFile.read((char*)(&nameLen), sizeof(nameLen));
+
+            char* currName = new char[nameLen + 1];
+            DBFile.read(currName, nameLen);
+
+            DBFile.read((char*)(&typeLen), sizeof(typeLen));
+
+            char* currType = new char[typeLen + 1];
+            DBFile.read(currType, typeLen);
+
+            if (id == chatId) {
+                DBFile.close();
+                return new Chat(id, String(currName), currType);
+            }
+        }
+    }
+
+    DBFile.close();
     return nullptr;
 }

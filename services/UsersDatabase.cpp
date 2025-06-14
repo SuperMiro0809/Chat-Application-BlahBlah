@@ -173,6 +173,119 @@ User* UsersDatabase::getUser(const String& username) const {
     return nullptr;
 }
 
+User* UsersDatabase::getById(unsigned int id) const {
+    SystemSettings systemSettings = SystemSettings::getInstance();
+    FileMode mode = systemSettings.getFileMode();
+
+    String fileName = systemSettings.getDbFileName(dbName);
+    std::ifstream DBFile;
+
+    if (mode == FileMode::TEXT) {
+        DBFile.open(fileName.getElements());
+
+        if (!DBFile.is_open()) {
+            throw std::runtime_error("Error: could not open database file");
+        }
+
+        String line;
+        while (true) {
+            getline(DBFile, line);
+
+            if (DBFile.eof()) {
+                break;
+            }
+
+            std::stringstream ss(line.getElements());
+            String idStr, usernameStr, passwordStr, roleStr;
+
+            getline(ss, idStr, FIELD_DELIMITER);
+            getline(ss, usernameStr, FIELD_DELIMITER);
+            getline(ss, passwordStr, FIELD_DELIMITER);
+            getline(ss, roleStr);
+
+            unsigned int currId = std::atoi(idStr.getElements());
+
+            if (currId == id) {
+                DBFile.close();
+                if (roleStr == USER_ADMIN) {
+                    return new Admin(currId, usernameStr, passwordStr);
+                } else {
+                    return new User(currId, usernameStr, passwordStr);
+                }
+            }
+        }
+    } else {
+        DBFile.open(fileName.getElements(), std::ios::binary);
+
+        if (!DBFile.is_open()) {
+            throw std::runtime_error("Error: could not open database file");
+        }
+
+        while (!DBFile.eof()) {
+            int currId;
+            if (!DBFile.read((char*)&currId, sizeof(currId))) break;
+
+            int len;
+
+            // Username
+            if (!DBFile.read((char*)&len, sizeof(len))) break;
+            char* currUsername = new char[len + 1];
+            if (!DBFile.read(currUsername, len)) {
+              delete[] currUsername;
+              break;
+            }
+            currUsername[len] = '\0';
+
+            // Password
+            if (!DBFile.read((char*)&len, sizeof(len))) {
+                delete[] currUsername;
+                break;
+            }
+            char* currPassword = new char[len + 1];
+            if (!DBFile.read(currPassword, len)) {
+                delete[] currUsername;
+                delete[] currPassword;
+                break;
+            }
+            currPassword[len] = '\0';
+
+            // Role
+            if (!DBFile.read((char*)&len, sizeof(len))) {
+                delete[] currUsername;
+                delete[] currPassword;
+                break;
+            }
+            char* currRole = new char[len + 1];
+            if (!DBFile.read(currRole, len)) {
+                delete[] currUsername;
+                delete[] currPassword;
+                delete[] currRole;
+                break;
+            }
+            currRole[len] = '\0';
+
+            if (currId == id) {
+                User* user = nullptr;
+
+                if (std::strcmp(currRole, USER_ADMIN) == 0) {
+                    user = new Admin(currId, currUsername, currPassword);
+                } else {
+                    user = new User(currId, currUsername, currPassword);
+                }
+
+                delete[] currUsername; delete[] currPassword; delete[] currRole;
+                DBFile.close();
+                return user;
+            }
+
+            delete[] currUsername; delete[] currPassword; delete[] currRole;
+        }
+    }
+
+    DBFile.close();
+    return nullptr;
+}
+
 bool UsersDatabase::isUsernameTaken(const String& username) const {
     SystemSettings systemSettings = SystemSettings::getInstance();
     FileMode mode = systemSettings.getFileMode();

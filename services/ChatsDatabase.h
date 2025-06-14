@@ -14,5 +14,7 @@ class ChatsDatabase: public Database {
 
         unsigned int addNewChat(const String& name, const char* type) const;
 
-        const Chat* findIndividualChat(unsigned int userOne, unsigned int userTwo);
+        const Chat* findIndividualChat(unsigned int userOne, unsigned int userTwo) const;
+
+        const Chat* findById(unsigned int chatId) const;
 };

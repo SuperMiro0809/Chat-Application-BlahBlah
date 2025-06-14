@@ -95,16 +95,17 @@ void ChatParticipantsVector::loadFromFile(const char* filename, unsigned int cha
             throw std::runtime_error("Error: could not open database file");
         }
 
-        while (true) {
-            ChatParticipant participant;
-            DBFile.read((char*)(&participant), sizeof(ChatParticipant));
-            if (DBFile.eof()) break;
-            if (!DBFile) break;
-
-            if (participant.getChatId() == chatId) {
-                addParticipant(participant);
-            }
-        }
+        // TODO binary
+//        while (true) {
+//            ChatParticipant participant;
+//            DBFile.read((char*)(&participant), sizeof(ChatParticipant));
+//            if (DBFile.eof()) break;
+//            if (!DBFile) break;
+//
+//            if (participant.getChatId() == chatId) {
+//                addParticipant(participant);
+//            }
+//        }
     }
 }
 

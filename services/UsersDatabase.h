@@ -15,5 +15,7 @@ class UsersDatabase: public Database {
 
         User* getUser(const String& username) const;
 
+        User* getById(unsigned int id) const;
+
         bool isUsernameTaken(const String& username) const;
 };

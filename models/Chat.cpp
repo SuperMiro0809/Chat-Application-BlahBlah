@@ -3,6 +3,7 @@
 #include <sstream>
 #include <stdexcept>
 #include "../core/Constants.h"
+#include "../utils/Vector.hpp"
 
 static const char* toString(ChatType type) {
     switch (type) {
@@ -40,15 +41,6 @@ unsigned int Chat::getId() const {
 
 ChatType Chat::getChatType() const {
     return type;
-}
-
-bool Chat::getAreMessagesLoaded() const {
-    return areMessagesLoaded;
-}
-
-void Chat::loadCriteriaChats() {
-    messages.loadFromFileByCriteria(MESSAGES_DB_NAME, id);
-    areMessagesLoaded = true;
 }
 
 std::ostream& operator<<(std::ostream& os, const Chat& chat) {
