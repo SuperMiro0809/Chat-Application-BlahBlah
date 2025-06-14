@@ -42,6 +42,15 @@ ChatType Chat::getChatType() const {
     return type;
 }
 
+bool Chat::getAreMessagesLoaded() const {
+    return areMessagesLoaded;
+}
+
+void Chat::loadCriteriaChats() {
+    messages.loadFromFileByCriteria(MESSAGES_DB_NAME, id);
+    areMessagesLoaded = true;
+}
+
 std::ostream& operator<<(std::ostream& os, const Chat& chat) {
     os << chat.id << FIELD_DELIMITER << chat.name << FIELD_DELIMITER << toString(chat.type);
     return os;

@@ -11,6 +11,10 @@ ChatMessage::ChatMessage(
     std::time_t sentAt
 ): id(id), chatId(chatId), senderId(senderId), message(message), sentAt(sentAt) {}
 
+unsigned int ChatMessage::getChatId() const {
+    return chatId;
+}
+
 std::ostream& operator<<(std::ostream& os, const ChatMessage& msg) {
     os << msg.id << FIELD_DELIMITER
        << msg.chatId << FIELD_DELIMITER
