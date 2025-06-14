@@ -4,10 +4,13 @@
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
-#include "../core/SystemSettings.h"
-#include "../core/Constants.h"
+
+#include "../utils/String.h"
 #include "../models/Chat.h"
 #include "../models/ChatParticipant.h"
+#include "../models/ChatMessage.h"
+#include "../core/SystemSettings.h"
+#include "../core/Constants.h"
 
 template<typename T>
 class Vector {
@@ -289,6 +292,75 @@ inline void Vector<ChatParticipant>::loadFromFileByCriteria(const char* filename
                 delete[] currType;
 
                 add(participant);
+            }
+        }
+    }
+
+    DBFile.close();
+}
+
+template<>
+inline void Vector<ChatMessage>::loadFromFileByCriteria(const char* filename, unsigned int chatId) {
+    SystemSettings systemSettings = SystemSettings::getInstance();
+    FileMode mode = systemSettings.getFileMode();
+
+    String fileName = systemSettings.getDbFileName(String(filename));
+    std::ifstream DBFile;
+
+    if (mode == FileMode::TEXT) {
+        DBFile.open(fileName.getElements());
+
+        if (!DBFile.is_open()) {
+            throw std::runtime_error("Error: could not open database file");
+        }
+
+        ChatMessage message;
+        while (DBFile >> message) {
+            if (message.getChatId() == chatId) {
+                add(message);
+            }
+        }
+    } else {
+        DBFile.open(fileName.getElements(), std::ios::binary);
+
+        if (!DBFile.is_open()) {
+            throw std::runtime_error("Error: could not open database file");
+        }
+
+        while (true) {
+            unsigned int id, currChatId, senderId, messageLen;
+            std::time_t sentAt;
+
+            DBFile.read((char*)(&id), sizeof(id));
+            if (DBFile.eof()) break;
+
+            DBFile.read((char*)(&currChatId), sizeof(currChatId));
+            if (DBFile.eof()) break;
+
+            DBFile.read((char*)(&senderId), sizeof(senderId));
+            if (DBFile.eof()) break;
+
+            DBFile.read((char*)(&messageLen), sizeof(messageLen));
+            if (DBFile.eof()) break;
+
+            char* currMessage = new char[messageLen + 1];
+            if (!DBFile.read(currMessage, messageLen)) {
+                delete[] currMessage;
+                break;;
+            }
+            currMessage[messageLen] = '\0';
+
+            DBFile.read((char*)(&sentAt), sizeof(sentAt));
+            if (DBFile.eof()) {
+                delete[] currMessage;
+                break;
+            }
+
+            if (currChatId == chatId) {
+                ChatMessage message(id, chatId, senderId, String(currMessage), sentAt);
+                delete[] currMessage;
+
+                add(message);
             }
         }
     }

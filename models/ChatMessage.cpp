@@ -1,6 +1,7 @@
 #include "ChatMessage.h"
 
 #include <sstream>
+#include "../services/UsersDatabase.h"
 #include "../core/Constants.h"
 
 ChatMessage::ChatMessage(
@@ -13,6 +14,18 @@ ChatMessage::ChatMessage(
 
 unsigned int ChatMessage::getChatId() const {
     return chatId;
+}
+
+void ChatMessage::print() const {
+    std::tm* timeinfo = std::localtime(&sentAt);
+    char buffer[100];
+    std::strftime(buffer, sizeof(buffer), "%H:%M %d.%m.%Y", timeinfo);
+
+    UsersDatabase usersDb(USERS_DB_NAME);
+    User* user = usersDb.getById(senderId);
+
+    std::cout << user->getUsername() << ", " << buffer << ": " << message << std::endl;
+    delete user;
 }
 
 std::ostream& operator<<(std::ostream& os, const ChatMessage& msg) {

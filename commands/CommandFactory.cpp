@@ -6,6 +6,7 @@
 #include "CreateAccountCommand.h"
 #include "FileModeCommand.h"
 #include "MessageCommand.h"
+#include "SelectChatCommand.h"
 
 Command* CommandFactory::create(const String& input) {
     std::stringstream ss(input.getElements());
@@ -35,6 +36,11 @@ Command* CommandFactory::create(const String& input) {
         getline(ss, message);
 
         return new MessageCommand(username, message);
+    } else if (cmd == "select-chat") {
+        unsigned int chatId;
+        ss >> std::ws >> chatId;
+
+        return new SelectChatCommand(chatId);
     }
 
     return nullptr;
