@@ -7,7 +7,7 @@
 DeleteUserCommand::DeleteUserCommand(const String& username): username(username) {}
 
 void DeleteUserCommand::execute(System& system) const {
-    const User* currUser = system.getCurrentUser();
+    User* currUser = system.getCurrentUser();
 
     if (!currUser) {
         throw std::logic_error("Command forbidden!");
@@ -34,6 +34,32 @@ void DeleteUserCommand::execute(System& system) const {
     messagesDb.removeByUser(userId);
 
     usersDb.removeUserById(userId);
+
+    Vector<Chat>& chats = currUser->getChats();
+    for (size_t i = 0; i < chats.getSize(); i++) {
+        Chat& chat = chats[i];
+
+        if (chat.getAreParticipantsLoaded()) {
+            Vector<ChatParticipant>* parts = chat.getParticipants();
+
+            for (size_t j = 0; j < parts->getSize(); j++) {
+                if ((*parts)[j].getUserId() == userId) {
+                    parts->removeAt(j);
+                    break;
+                }
+            }
+        }
+
+        if (chat.getAreMessagesLoaded()) {
+            Vector<ChatMessage>* messages = chat.getMessages();
+
+            for (int j = messages->getSize(); j > 0; j--) {
+                if ((*messages)[j - 1].getSenderId() == userId) {
+                    messages->removeAt(j - 1);
+                }
+            }
+        }
+    }
 
     std::cout << "User deleted successfully!" << std::endl;
 }
