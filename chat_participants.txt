@@ -1,6 +1,2 @@
 1|1|1|Member
-1|1|2|Member
-4|2|1|Admin
-5|2|5|Admin
-6|3|2|Member
-7|3|3|Member
+2|1|2|Member

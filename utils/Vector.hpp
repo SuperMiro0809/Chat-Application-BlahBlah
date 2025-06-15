@@ -185,12 +185,21 @@ inline void Vector<ChatParticipant>::loadFromFile(const char* filename) {
             unsigned int id, chatId, userId, len;
 
             DBFile.read((char*)(&id), sizeof(id));
+            if (DBFile.eof()) break;
+
             DBFile.read((char*)(&chatId), sizeof(chatId));
+            if (DBFile.eof()) break;
+
             DBFile.read((char*)(&userId), sizeof(userId));
+            if (DBFile.eof()) break;
 
             DBFile.read((char*)(&len), sizeof(len));
+            if (DBFile.eof()) break;
+
             char* currType = new char[len + 1];
-            DBFile.read(currType, len);
+            if (!DBFile.read(currType, len)) {
+                break;
+            }
             currType[len] = '\0';
 
             ChatParticipant participant(id, chatId, userId, currType);
@@ -228,19 +237,29 @@ inline void Vector<Chat>::loadFromFile(const char* filename) {
             throw std::runtime_error("Error: could not open database file");
         }
 
-        while (!DBFile.eof()) {
+        while (true) {
             unsigned int id, nameLen, typeLen;
 
             DBFile.read((char*)(&id), sizeof(id));
+            if (DBFile.eof()) break;
 
             DBFile.read((char*)(&nameLen), sizeof(nameLen));
+            if (DBFile.eof()) break;
+
             char* currName = new char[nameLen + 1];
-            DBFile.read(currName, nameLen);
+            if (!DBFile.read(currName, nameLen)) {
+                break;
+            }
             currName[nameLen] = '\0';
 
             DBFile.read((char*)(&typeLen), sizeof(typeLen));
+            if (DBFile.eof()) break;
+
             char* currType = new char[typeLen + 1];
-            DBFile.read(currType, typeLen);
+            if (!DBFile.read(currType, typeLen)) {
+                delete[] currName;
+                break;
+            }
             currType[typeLen] = '\0';
 
             Chat chat(id, String(currName), currType);
@@ -289,19 +308,32 @@ inline void Vector<Chat>::loadFromFileByCriteria(const char* filename, unsigned 
             throw std::runtime_error("Error: could not open database file");
         }
 
-        while (!DBFile.eof()) {
+        while (true) {
             unsigned int id, nameLen, typeLen;
 
             DBFile.read((char*)(&id), sizeof(id));
+            if (DBFile.eof()) break;
 
             DBFile.read((char*)(&nameLen), sizeof(nameLen));
+            if (DBFile.eof()) break;
+
             char* currName = new char[nameLen + 1];
-            DBFile.read(currName, nameLen);
+            if (!DBFile.read(currName, nameLen)) {
+                break;;
+            }
             currName[nameLen] = '\0';
 
             DBFile.read((char*)(&typeLen), sizeof(typeLen));
+            if (DBFile.eof()) {
+                delete[] currName;
+                break;
+            }
+
             char* currType = new char[typeLen + 1];
-            DBFile.read(currType, typeLen);
+            if (!DBFile.read(currType, typeLen)) {
+                delete[] currName;
+                break;;
+            }
             currType[typeLen] = '\0';
 
             Chat chat(id, String(currName), currType);
@@ -362,8 +394,12 @@ inline void Vector<ChatParticipant>::loadFromFileByCriteria(const char* filename
             if (DBFile.eof()) break;
 
             DBFile.read((char*)(&len), sizeof(len));
+            if (DBFile.eof()) break;
+
             char* currType = new char[len + 1];
-            DBFile.read(currType, len);
+            if (!DBFile.read(currType, len)) {
+                break;
+            }
             currType[len] = '\0';
 
             if (currChatId == chatId) {
@@ -407,7 +443,8 @@ inline void Vector<ChatMessage>::loadFromFileByCriteria(const char* filename, un
         }
 
         while (true) {
-            unsigned int id, currChatId, senderId, messageLen;
+            unsigned int id, currChatId, senderId;
+            size_t messageLen;
             std::time_t sentAt;
 
             DBFile.read((char*)(&id), sizeof(id));
@@ -435,10 +472,10 @@ inline void Vector<ChatMessage>::loadFromFileByCriteria(const char* filename, un
                 break;
             }
 
-            if (currChatId == chatId) {
-                ChatMessage message(id, chatId, senderId, String(currMessage), sentAt);
-                delete[] currMessage;
+            ChatMessage message(id, chatId, senderId, String(currMessage), sentAt);
+            delete[] currMessage;
 
+            if (currChatId == chatId) {
                 add(message);
             }
         }

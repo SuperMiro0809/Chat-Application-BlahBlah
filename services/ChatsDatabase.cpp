@@ -5,7 +5,7 @@
 #include "../models/Chat.h"
 #include "../core/SystemSettings.h"
 #include "../core/Constants.h"
-#include "../utils/ChatParticipantsVector.h"
+#include "../utils/Vector.hpp"
 
 void ChatsDatabase::writeChatToTextFile(unsigned int id, const String& name, const char* type) const {
     Chat chat(id, name, type);
@@ -67,8 +67,8 @@ const Chat* ChatsDatabase::findIndividualChat(unsigned int userOne, unsigned int
         Chat chat;
         while (DBFile >> chat) {
             if (chat.getChatType() == ChatType::INDIVIDUAL) {
-                ChatParticipantsVector vector;
-                vector.loadFromFile(PARTICIPANTS_DB_NAME, chat.getId());
+                Vector<ChatParticipant> vector;
+                vector.loadFromFileByCriteria(PARTICIPANTS_DB_NAME, chat.getId());
 
                 bool userOneFound = false;
                 bool userTwoFound = false;
@@ -95,20 +95,29 @@ const Chat* ChatsDatabase::findIndividualChat(unsigned int userOne, unsigned int
             throw std::runtime_error("Error: could not open database file");
         }
 
-        while (!DBFile.eof()) {
+        while (true) {
             unsigned int id, nameLen, typeLen;
 
             DBFile.read((char*)(&id), sizeof(id));
             if (DBFile.eof()) break;
 
             DBFile.read((char*)(&nameLen), sizeof(nameLen));
+            if (DBFile.eof()) break;
+
             char* nameBuf = new char[nameLen + 1];
-            DBFile.read(nameBuf, nameLen);
+            if (!DBFile.read(nameBuf, nameLen)) {
+                break;
+            }
             nameBuf[nameLen] = '\0';
 
             DBFile.read((char*)(&typeLen), sizeof(typeLen));
+            if (DBFile.eof()) break;
+
             char* typeBuf = new char[typeLen + 1];
-            DBFile.read(typeBuf, typeLen);
+            if (!DBFile.read(typeBuf, typeLen)) {
+                delete[] nameBuf;
+                break;
+            }
             typeBuf[typeLen] = '\0';
 
             Chat chat(id, String(nameBuf), typeBuf);
@@ -116,8 +125,8 @@ const Chat* ChatsDatabase::findIndividualChat(unsigned int userOne, unsigned int
             delete[] typeBuf;
 
             if (chat.getChatType() == ChatType::INDIVIDUAL) {
-                ChatParticipantsVector vector;
-                vector.loadFromFile(PARTICIPANTS_DB_NAME, chat.getId());
+                Vector<ChatParticipant> vector;
+                vector.loadFromFileByCriteria(PARTICIPANTS_DB_NAME, chat.getId());
 
                 bool userOneFound = false;
                 bool userTwoFound = false;
