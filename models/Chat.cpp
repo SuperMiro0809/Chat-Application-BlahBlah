@@ -29,19 +29,33 @@ static ChatType parseChatType(const char* str) {
 
 void Chat::freeDynamic() {
     delete messages;
+    delete participants;
 }
 
 void Chat::copyDynamic(const Chat& other) {
     messages = new Vector(*other.messages);
+    participants = new Vector(*other.participants);
 }
 
-Chat::Chat(): id(-1), type(ChatType::DEFAULT), messages(new Vector<ChatMessage>()) {}
+Chat::Chat():
+    id(-1),
+    type(ChatType::DEFAULT),
+    messages(new Vector<ChatMessage>()),
+    participants(new Vector<ChatParticipant>()) {}
 
 Chat::Chat(unsigned int id, const String& name, ChatType type):
-    id(id), name(name), type(type), messages(new Vector<ChatMessage>()) {}
+    id(id),
+    name(name),
+    type(type),
+    messages(new Vector<ChatMessage>()),
+    participants(new Vector<ChatParticipant>()) {}
 
 Chat::Chat(unsigned int id, const String& name, const char* type):
-    id(id), name(name), messages(new Vector<ChatMessage>()) {
+    id(id),
+    name(name),
+    messages(new Vector<ChatMessage>()),
+    participants(new Vector<ChatParticipant>())
+{
     this->type = parseChatType(type);
 }
 
@@ -49,6 +63,8 @@ Chat::Chat(const Chat& other) {
     id = other.id;
     name = other.name;
     type = other.type;
+    areMessagesLoaded = other.areMessagesLoaded;
+    areParticipantsLoaded = other.areParticipantsLoaded;
     copyDynamic(other);
 }
 
@@ -62,6 +78,8 @@ Chat &Chat::operator=(const Chat &other) {
         id = other.id;
         name = other.name;
         type = other.type;
+        areMessagesLoaded = other.areMessagesLoaded;
+        areParticipantsLoaded = other.areParticipantsLoaded;
         copyDynamic(other);
     }
     return *this;
@@ -90,6 +108,23 @@ bool Chat::getAreMessagesLoaded() const {
 void Chat::loadMessages() {
     messages->loadFromFileByCriteria(MESSAGES_DB_NAME, id);
     areMessagesLoaded = true;
+}
+
+const Vector<ChatParticipant>* Chat::getParticipants() const {
+    return participants;
+}
+
+Vector<ChatParticipant>* Chat::getParticipants() {
+    return participants;
+}
+
+bool Chat::getAreParticipantsLoaded() const {
+    return areParticipantsLoaded;
+}
+
+void Chat::loadParticipants() {
+    participants->loadFromFileByCriteria(PARTICIPANTS_DB_NAME, id);
+    areParticipantsLoaded = true;
 }
 
 void Chat::print() {

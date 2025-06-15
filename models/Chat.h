@@ -2,6 +2,7 @@
 
 #include "../utils/String.h"
 #include "ChatMessage.h"
+#include "ChatParticipant.h"
 
 template<typename T>
 class Vector;
@@ -19,6 +20,9 @@ class Chat {
 
     Vector<ChatMessage>* messages;
     bool areMessagesLoaded = false;
+
+    Vector<ChatParticipant>* participants;
+    bool areParticipantsLoaded = false;
 
     void freeDynamic();
 
@@ -48,6 +52,14 @@ class Chat {
         bool getAreMessagesLoaded() const;
 
         void loadMessages();
+
+        const Vector<ChatParticipant>* getParticipants() const;
+
+        Vector<ChatParticipant>* getParticipants();
+
+        bool getAreParticipantsLoaded() const;
+
+        void loadParticipants();
 
         void print();
 
