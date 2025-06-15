@@ -5,6 +5,13 @@
 #include "../core/Constants.h"
 
 static void printMessages(const Vector<ChatMessage>& messages) {
+    size_t size = messages.getSize();
+
+    if (size == 0) {
+        std::cout << "No messages to show yet!" << std::endl;
+        return;
+    }
+
     for (size_t i = 0; i < messages.getSize(); ++i) {
         messages[i].print();
     }
