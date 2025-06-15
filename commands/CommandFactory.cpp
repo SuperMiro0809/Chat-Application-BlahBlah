@@ -14,6 +14,7 @@
 #include "GroupStatsCommand.h"
 #include "ViewAllChatsCommand.h"
 #include "LeaveGroupCommand.h"
+#include "KickFromGroupCommand.h"
 
 Command* CommandFactory::create(const String& input) {
     std::stringstream ss(input.getElements());
@@ -81,6 +82,13 @@ Command* CommandFactory::create(const String& input) {
         ss >> std::ws >> chatId;
 
         return new LeaveGroupCommand(chatId);
+    } else if (cmd == "kick-from-group") {
+        unsigned int chatId;
+        String username;
+        ss >> std::ws >> chatId;
+        ss >> std::ws >> username;
+
+        return new KickFromGroupCommand(chatId, username);
     }
 
     return nullptr;
