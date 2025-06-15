@@ -25,6 +25,8 @@ class ChatParticipant {
 
         unsigned int getUserId() const;
 
+        ParticipantTypes getType() const;
+
         friend std::ostream& operator<<(std::ostream& os, const ChatParticipant& participant);
 
         friend std::istream& operator>>(std::istream& is, ChatParticipant& participant);

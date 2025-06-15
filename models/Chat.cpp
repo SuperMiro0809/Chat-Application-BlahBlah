@@ -127,6 +127,10 @@ void Chat::loadParticipants() {
     areParticipantsLoaded = true;
 }
 
+const String& Chat::getName() const {
+    return name;
+}
+
 void Chat::print() {
     if (!areMessagesLoaded) {
         loadMessages();

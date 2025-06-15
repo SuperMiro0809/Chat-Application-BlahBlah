@@ -61,6 +61,8 @@ class Chat {
 
         void loadParticipants();
 
+        const String& getName() const;
+
         void print();
 
         friend std::ostream& operator<<(std::ostream& os, const Chat& chat);

@@ -10,6 +10,7 @@
 #include "SelectChatCommand.h"
 #include "CreateGroupCommand.h"
 #include "ViewChatsCommand.h"
+#include "AddToGroupCommand.h"
 
 Command* CommandFactory::create(const String& input) {
     std::stringstream ss(input.getElements());
@@ -58,6 +59,13 @@ Command* CommandFactory::create(const String& input) {
         return new CreateGroupCommand(groupName, participants);
     } else if (cmd == "view-chats") {
         return new ViewChatsCommand();
+    } else if (cmd == "add-to-group") {
+        unsigned int chatId;
+        String username;
+        ss >> std::ws >> chatId;
+        ss >> std::ws >> username;
+
+        return new AddToGroupCommand(chatId, username);
     }
 
     return nullptr;

@@ -50,6 +50,10 @@ unsigned int ChatParticipant::getUserId() const {
     return userId;
 }
 
+ParticipantTypes ChatParticipant::getType() const {
+    return type;
+}
+
 std::ostream& operator<<(std::ostream& os, const ChatParticipant& participant) {
     os << participant.id << FIELD_DELIMITER
        << participant.chatId << FIELD_DELIMITER

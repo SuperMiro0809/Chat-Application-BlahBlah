@@ -36,8 +36,10 @@ void ChatParticipantsDatabase::writeParticipantToBinaryFile(unsigned int id, uns
 
 ChatParticipantsDatabase::ChatParticipantsDatabase(const char* dbName): Database(dbName) {}
 
-void ChatParticipantsDatabase::addNewParticipant(unsigned int chatId, unsigned int userId, const char* type) const {
+ChatParticipant ChatParticipantsDatabase::addNewParticipant(unsigned int chatId, unsigned int userId, const char* type) const {
     unsigned int nextId = autoIncrement();
     writeParticipantToTextFile(nextId, chatId, userId, type);
     writeParticipantToBinaryFile(nextId, chatId, userId, type);
+
+    return ChatParticipant(nextId, chatId, userId, type);
 }
