@@ -13,5 +13,7 @@ class ChatParticipantsDatabase: public Database {
 
         ChatParticipant addNewParticipant(unsigned int chatId, unsigned int userId, const char* type) const;
 
-        void removeParticipant(unsigned int chatId, unsigned int userId);
+        void removeParticipant(unsigned int chatId, unsigned int userId) const;
+
+        void updateParticipantRole(unsigned int chatId, unsigned int userId, const char* newType) const;
 };

@@ -45,7 +45,7 @@ ChatParticipant ChatParticipantsDatabase::addNewParticipant(unsigned int chatId,
     return ChatParticipant(nextId, chatId, userId, type);
 }
 
-void ChatParticipantsDatabase::removeParticipant(unsigned int chatId, unsigned int userId) {
+void ChatParticipantsDatabase::removeParticipant(unsigned int chatId, unsigned int userId) const {
     Vector<ChatParticipant> participants;
     participants.loadFromFile(dbName.getElements());
 
@@ -83,4 +83,50 @@ void ChatParticipantsDatabase::removeParticipant(unsigned int chatId, unsigned i
 
     textFile.close();
     binaryFile.close();
+}
+
+void ChatParticipantsDatabase::updateParticipantRole(unsigned int chatId, unsigned int userId, const char* newType) const {
+    Vector<ChatParticipant> participants;
+    participants.loadFromFile(dbName.getElements());
+
+    std::ofstream textFile((dbName + ".txt").getElements());
+    std::ofstream binaryFile((dbName + ".dat").getElements(), std::ios::binary);
+
+    if (!textFile.is_open() || !binaryFile.is_open()) {
+        throw std::runtime_error("Error: could not open database file for rewrite");
+    }
+
+    bool updated = false;
+
+    for (size_t i = 0; i < participants.getSize(); ++i) {
+        ChatParticipant p = participants[i];
+
+        if (p.getChatId() == chatId && p.getUserId() == userId) {
+            p.setType(newType);
+            updated = true;
+        }
+
+        // Write to text
+        textFile << p << '\n';
+
+        // Write to binary
+        unsigned int id = p.getId();
+        unsigned int cid = p.getChatId();
+        unsigned int uid = p.getUserId();
+        const char* type = p.getTypeStr();
+        unsigned int len = std::strlen(type);
+
+        binaryFile.write((const char*)&id, sizeof(id));
+        binaryFile.write((const char*)&cid, sizeof(cid));
+        binaryFile.write((const char*)&uid, sizeof(uid));
+        binaryFile.write((const char*)&len, sizeof(len));
+        binaryFile.write(type, len);
+    }
+
+    textFile.close();
+    binaryFile.close();
+
+    if (!updated) {
+        throw std::logic_error("Participant not found for update.");
+    }
 }

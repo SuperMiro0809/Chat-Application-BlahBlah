@@ -42,7 +42,7 @@ void LeaveGroupCommand::execute(System& system) const {
     bool isAdmin = false;
     size_t adminCount = 0;
 
-    for (size_t i = 0; i < participants.getSize(); ++i) {
+    for (size_t i = 0; i < participants.getSize(); i++) {
         const ChatParticipant& p = participants[i];
 
         if (p.getType() == ParticipantTypes::ADMIN) {

@@ -15,6 +15,7 @@
 #include "ViewAllChatsCommand.h"
 #include "LeaveGroupCommand.h"
 #include "KickFromGroupCommand.h"
+#include "SetGroupAdminCommand.h"
 
 Command* CommandFactory::create(const String& input) {
     std::stringstream ss(input.getElements());
@@ -89,6 +90,13 @@ Command* CommandFactory::create(const String& input) {
         ss >> std::ws >> username;
 
         return new KickFromGroupCommand(chatId, username);
+    } else if (cmd == "set-group-admin") {
+        unsigned int chatId;
+        String username;
+        ss >> std::ws >> chatId;
+        ss >> std::ws >> username;
+
+        return new SetGroupAdminCommand(chatId, username);
     }
 
     return nullptr;

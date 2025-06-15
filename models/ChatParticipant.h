@@ -29,6 +29,10 @@ class ChatParticipant {
 
         ParticipantTypes getType() const;
 
+        void setType(ParticipantTypes newType);
+
+        void setType(const char* newType);
+
         const char* getTypeStr() const;
 
         friend std::ostream& operator<<(std::ostream& os, const ChatParticipant& participant);

@@ -1,12 +1,12 @@
-#include "KickFromGroupCommand.h"
+#include "SetGroupAdminCommand.h"
 
 #include "../services/UsersDatabase.h"
 #include "../services/ChatParticipantsDatabase.h"
 
-KickFromGroupCommand::KickFromGroupCommand(unsigned int chatId, const String& username): chatId(chatId), username(username) {}
+SetGroupAdminCommand::SetGroupAdminCommand(unsigned int chatId, const String& username): chatId(chatId), username(username) {}
 
-void KickFromGroupCommand::execute(System& system) const {
-    User* currUser = system.getCurrentUser();
+void SetGroupAdminCommand::execute(System& system) const {
+     User* currUser = system.getCurrentUser();
 
     if (!currUser) {
         throw std::logic_error("Command forbidden!");
@@ -17,18 +17,14 @@ void KickFromGroupCommand::execute(System& system) const {
     }
 
     UsersDatabase usersDb(USERS_DB_NAME);
-    User* oldParticipant = usersDb.getUser(username);
+    User* newAdmin = usersDb.getUser(username);
 
-    if (!oldParticipant) {
+    if (!newAdmin) {
         throw std::logic_error("User does not exist!");
     }
 
-    unsigned int oldParticipantId = oldParticipant->getId();
-    delete oldParticipant;
-
-    if (oldParticipantId == currUser->getId()) {
-        throw std::logic_error("You can not kick yourself!");
-    }
+    unsigned int newAdminId = newAdmin->getId();
+    delete newAdmin;
 
     Vector<Chat>& chats = currUser->getChats();
     Chat* selectedChat = nullptr;
@@ -56,40 +52,52 @@ void KickFromGroupCommand::execute(System& system) const {
 
     bool isAdmin = false;
     bool isNewPart = false;
+
     for (size_t i = 0; i < participants.getSize(); i++) {
         const ChatParticipant& p = participants[i];
-
-        if (p.getUserId() == oldParticipantId) {
-            isNewPart = true;
-        }
 
         if (p.getUserId() == currUser->getId()) {
             if (p.getType() == ParticipantTypes::ADMIN) {
                 isAdmin = true;
             } else {
-              break;
+                break;
             }
+        }
+
+        if (p.getUserId() == newAdminId) {
+            isNewPart = true;
         }
     }
 
     if (!isAdmin) {
-        throw std::logic_error("You do not have permissions to kick users!");
+        throw std::logic_error("You do not have permissions to make user admin!");
     }
 
     if (!isNewPart) {
         throw std::logic_error("User is not a member of this group!");
     }
 
-
-    ChatParticipantsDatabase chatParticipantsDb(PARTICIPANTS_DB_NAME);
-    chatParticipantsDb.removeParticipant(chatId, oldParticipantId);
+    bool updated = false;
 
     for (size_t i = 0; i < participants.getSize(); i++) {
-        if (participants[i].getUserId() == oldParticipantId) {
-            participants.removeAt(i);
+        ChatParticipant& p = participants[i];
+
+        if (p.getUserId() == newAdminId) {
+            if (p.getType() != ParticipantTypes::ADMIN) {
+                p.setType(ParticipantTypes::ADMIN);
+                updated = true;
+            }
             break;
         }
     }
 
-    std::cout << username << " kicked from " << selectedChat->getName() << " successfully." << std::endl;
+    if (!updated) {
+        std::cout << "User is already an admin in this group." << std::endl;
+        return;
+    }
+
+    ChatParticipantsDatabase participantsDb(PARTICIPANTS_DB_NAME);
+    participantsDb.updateParticipantRole(selectedChat->getId(), newAdminId, PARTICIPANT_ADMIN);
+
+    std::cout << username << " is now admin of " << selectedChat->getName() << "!" << std::endl;
 }

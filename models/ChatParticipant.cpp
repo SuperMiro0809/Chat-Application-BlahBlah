@@ -62,6 +62,14 @@ const char* ChatParticipant::getTypeStr() const {
     return toString(type);
 }
 
+void ChatParticipant::setType(ParticipantTypes newType) {
+    type = newType;
+}
+
+void ChatParticipant::setType(const char* newType) {
+    type = parseParticipantType(newType);
+}
+
 std::ostream& operator<<(std::ostream& os, const ChatParticipant& participant) {
     os << participant.id << FIELD_DELIMITER
        << participant.chatId << FIELD_DELIMITER
