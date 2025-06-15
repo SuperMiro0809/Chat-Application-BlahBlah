@@ -425,8 +425,11 @@ void UsersDatabase::removeUserById(unsigned int userId) const {
         binIn.read(passwordBuf, passwordLen);
         passwordBuf[passwordLen] = '\0';
 
-        int roleVal;
-        binIn.read((char*)&roleVal, sizeof(roleVal));
+        unsigned int roleLen;
+        binIn.read((char*)&roleLen, sizeof(roleLen));
+        char* roleBuf = new char[roleLen + 1];
+        binIn.read(roleBuf, roleLen);
+        roleBuf[roleLen] = '\0';
 
         if (id != userId) {
             binOut.write((char*)&id, sizeof(id));
@@ -434,11 +437,13 @@ void UsersDatabase::removeUserById(unsigned int userId) const {
             binOut.write(usernameBuf, usernameLen);
             binOut.write((char*)&passwordLen, sizeof(passwordLen));
             binOut.write(passwordBuf, passwordLen);
-            binOut.write((char*)&roleVal, sizeof(roleVal));
+            binOut.write((char*)&roleLen, sizeof(roleLen));
+            binOut.write(roleBuf, roleLen);
         }
 
         delete[] usernameBuf;
         delete[] passwordBuf;
+        delete[] roleBuf;
     }
 
     binIn.close();
