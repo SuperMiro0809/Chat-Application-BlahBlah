@@ -21,11 +21,15 @@ class ChatParticipant {
 
         ChatParticipant(unsigned int id, unsigned int chatId, unsigned int userId, const char* type);
 
+        unsigned int getId() const;
+
         unsigned int getChatId() const;
 
         unsigned int getUserId() const;
 
         ParticipantTypes getType() const;
+
+        const char* getTypeStr() const;
 
         friend std::ostream& operator<<(std::ostream& os, const ChatParticipant& participant);
 

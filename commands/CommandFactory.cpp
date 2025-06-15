@@ -13,6 +13,7 @@
 #include "AddToGroupCommand.h"
 #include "GroupStatsCommand.h"
 #include "ViewAllChatsCommand.h"
+#include "LeaveGroupCommand.h"
 
 Command* CommandFactory::create(const String& input) {
     std::stringstream ss(input.getElements());
@@ -75,6 +76,11 @@ Command* CommandFactory::create(const String& input) {
         return new GroupStatsCommand(chatId);
     } else if (cmd == "view-all-chats") {
         return new ViewAllChatsCommand();
+    } else if (cmd == "leave-group") {
+        unsigned int chatId;
+        ss >> std::ws >> chatId;
+
+        return new LeaveGroupCommand(chatId);
     }
 
     return nullptr;

@@ -37,6 +37,8 @@ class Vector {
 
         size_t getSize() const;
 
+        void removeAt(size_t index);
+
         const T& operator[](size_t index) const;
 
         T& operator[](size_t index);
@@ -118,6 +120,19 @@ void Vector<T>::add(const T& element) {
 template<typename T>
 size_t Vector<T>::getSize() const {
     return size;
+}
+
+template<typename T>
+void Vector<T>::removeAt(size_t index) {
+    if (index >= size) {
+        throw std::out_of_range("Index out of range");
+    }
+
+    for (size_t i = index; i < size - 1; ++i) {
+        data[i] = data[i + 1];
+    }
+
+    --size;
 }
 
 template<typename T>

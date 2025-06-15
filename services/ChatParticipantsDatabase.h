@@ -12,4 +12,6 @@ class ChatParticipantsDatabase: public Database {
         ChatParticipantsDatabase(const char* dbName);
 
         ChatParticipant addNewParticipant(unsigned int chatId, unsigned int userId, const char* type) const;
+
+        void removeParticipant(unsigned int chatId, unsigned int userId);
 };

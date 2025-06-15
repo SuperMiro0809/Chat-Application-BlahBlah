@@ -42,6 +42,10 @@ ChatParticipant::ChatParticipant(unsigned int id, unsigned int chatId, unsigned 
     this->type = parseParticipantType(type);
 }
 
+unsigned int ChatParticipant::getId() const {
+    return id;
+}
+
 unsigned int ChatParticipant::getChatId() const {
     return chatId;
 }
@@ -52,6 +56,10 @@ unsigned int ChatParticipant::getUserId() const {
 
 ParticipantTypes ChatParticipant::getType() const {
     return type;
+}
+
+const char* ChatParticipant::getTypeStr() const {
+    return toString(type);
 }
 
 std::ostream& operator<<(std::ostream& os, const ChatParticipant& participant) {
