@@ -1,12 +1,14 @@
 #include "CommandFactory.h"
 
 #include <sstream>
+#include "../utils/Vector.hpp"
 #include "LoginCommand.h"
 #include "LogoutCommand.h"
 #include "CreateAccountCommand.h"
 #include "FileModeCommand.h"
 #include "MessageCommand.h"
 #include "SelectChatCommand.h"
+#include "CreateGroupCommand.h"
 
 Command* CommandFactory::create(const String& input) {
     std::stringstream ss(input.getElements());
@@ -41,6 +43,18 @@ Command* CommandFactory::create(const String& input) {
         ss >> std::ws >> chatId;
 
         return new SelectChatCommand(chatId);
+    } else if (cmd == "create-group") {
+        String groupName;
+        ss >> std::ws >> groupName;
+
+        Vector<String> participants;
+        String username;
+
+        while (ss >> std::ws >> username) {
+            participants.add(username);
+        }
+
+        return new CreateGroupCommand(groupName, participants);
     }
 
     return nullptr;

@@ -1,1 +1,2 @@
 1|test-test1|Individual
+2|Group1|Group
