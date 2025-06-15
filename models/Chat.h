@@ -49,6 +49,8 @@ class Chat {
 
         void loadMessages();
 
+        void print();
+
         friend std::ostream& operator<<(std::ostream& os, const Chat& chat);
 
         friend std::istream& operator>>(std::istream& is, Chat& chat);

@@ -9,6 +9,7 @@
 #include "MessageCommand.h"
 #include "SelectChatCommand.h"
 #include "CreateGroupCommand.h"
+#include "ViewChatsCommand.h"
 
 Command* CommandFactory::create(const String& input) {
     std::stringstream ss(input.getElements());
@@ -55,6 +56,8 @@ Command* CommandFactory::create(const String& input) {
         }
 
         return new CreateGroupCommand(groupName, participants);
+    } else if (cmd == "view-chats") {
+        return new ViewChatsCommand();
     }
 
     return nullptr;

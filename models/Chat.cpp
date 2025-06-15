@@ -92,6 +92,14 @@ void Chat::loadMessages() {
     areMessagesLoaded = true;
 }
 
+void Chat::print() {
+    if (!areMessagesLoaded) {
+        loadMessages();
+    }
+
+    std::cout << id << ": " << name << " (" << messages->getSize() << " messages)" << std::endl;
+}
+
 std::ostream& operator<<(std::ostream& os, const Chat& chat) {
     os << chat.id << FIELD_DELIMITER << chat.name << FIELD_DELIMITER << toString(chat.type);
     return os;
