@@ -89,7 +89,53 @@ const Chat* ChatsDatabase::findIndividualChat(unsigned int userOne, unsigned int
             }
         }
     } else {
-        // TODO binary
+        DBFile.open(fileName.getElements(), std::ios::binary);
+
+        if (!DBFile.is_open()) {
+            throw std::runtime_error("Error: could not open database file");
+        }
+
+        while (!DBFile.eof()) {
+            unsigned int id, nameLen, typeLen;
+
+            DBFile.read((char*)(&id), sizeof(id));
+            if (DBFile.eof()) break;
+
+            DBFile.read((char*)(&nameLen), sizeof(nameLen));
+            char* nameBuf = new char[nameLen + 1];
+            DBFile.read(nameBuf, nameLen);
+            nameBuf[nameLen] = '\0';
+
+            DBFile.read((char*)(&typeLen), sizeof(typeLen));
+            char* typeBuf = new char[typeLen + 1];
+            DBFile.read(typeBuf, typeLen);
+            typeBuf[typeLen] = '\0';
+
+            Chat chat(id, String(nameBuf), typeBuf);
+            delete[] nameBuf;
+            delete[] typeBuf;
+
+            if (chat.getChatType() == ChatType::INDIVIDUAL) {
+                ChatParticipantsVector vector;
+                vector.loadFromFile(PARTICIPANTS_DB_NAME, chat.getId());
+
+                bool userOneFound = false;
+                bool userTwoFound = false;
+                size_t participantsLen = vector.getSize();
+
+                if (participantsLen == 2) {
+                    for (size_t i = 0; i < participantsLen; i++) {
+                        if (vector[i].getUserId() == userOne) userOneFound = true;
+                        if (vector[i].getUserId() == userTwo) userTwoFound = true;
+                    }
+
+                    if (userOneFound && userTwoFound) {
+                        DBFile.close();
+                        return new Chat(chat);
+                    }
+                }
+            }
+        }
     }
 
     DBFile.close();
