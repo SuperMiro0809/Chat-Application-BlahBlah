@@ -12,6 +12,7 @@
 #include "ViewChatsCommand.h"
 #include "AddToGroupCommand.h"
 #include "GroupStatsCommand.h"
+#include "ViewAllChatsCommand.h"
 
 Command* CommandFactory::create(const String& input) {
     std::stringstream ss(input.getElements());
@@ -72,6 +73,8 @@ Command* CommandFactory::create(const String& input) {
         ss >> std::ws >> chatId;
 
         return new GroupStatsCommand(chatId);
+    } else if (cmd == "view-all-chats") {
+        return new ViewAllChatsCommand();
     }
 
     return nullptr;

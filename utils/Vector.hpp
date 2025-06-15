@@ -188,6 +188,59 @@ inline void Vector<ChatParticipant>::loadFromFile(const char* filename) {
 }
 
 template<>
+inline void Vector<Chat>::loadFromFile(const char* filename) {
+    SystemSettings systemSettings = SystemSettings::getInstance();
+    FileMode mode = systemSettings.getFileMode();
+
+    String fileName = systemSettings.getDbFileName(String(filename));
+    std::ifstream DBFile;
+
+    if (mode == FileMode::TEXT) {
+        DBFile.open(fileName.getElements());
+
+        if (!DBFile.is_open()) {
+            throw std::runtime_error("Error: could not open database file");
+        }
+
+        Chat chat;
+        while (DBFile >> chat) {
+            add(chat);
+        }
+    } else {
+        DBFile.open(fileName.getElements(), std::ios::binary);
+
+        if (!DBFile.is_open()) {
+            throw std::runtime_error("Error: could not open database file");
+        }
+
+        while (!DBFile.eof()) {
+            unsigned int id, nameLen, typeLen;
+
+            DBFile.read((char*)(&id), sizeof(id));
+
+            DBFile.read((char*)(&nameLen), sizeof(nameLen));
+            char* currName = new char[nameLen + 1];
+            DBFile.read(currName, nameLen);
+            currName[nameLen] = '\0';
+
+            DBFile.read((char*)(&typeLen), sizeof(typeLen));
+            char* currType = new char[typeLen + 1];
+            DBFile.read(currType, typeLen);
+            currType[typeLen] = '\0';
+
+            Chat chat(id, String(currName), currType);
+
+            delete[] currName;
+            delete[] currType;
+
+            add(chat);
+        }
+    }
+
+    DBFile.close();
+}
+
+template<>
 inline void Vector<Chat>::loadFromFileByCriteria(const char* filename, unsigned int userId) {
     SystemSettings systemSettings = SystemSettings::getInstance();
     FileMode mode = systemSettings.getFileMode();
