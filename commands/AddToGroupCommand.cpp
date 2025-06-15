@@ -47,15 +47,12 @@ void AddToGroupCommand::execute(System& system) const {
         throw std::logic_error("User does not exist!");
     }
 
-    bool isCurrUserPart = false;
     bool isCurrUserAdmin = false;
     bool isNewUserPart = false;
 
     for (size_t i = 0; i < participants.getSize(); i++) {
         const ChatParticipant& participant = participants[i];
         if (participant.getUserId() == currUser->getId()) {
-            isCurrUserPart = true;
-
             if (participant.getType() == ParticipantTypes::ADMIN) {
                 isCurrUserAdmin = true;
             } else {
@@ -72,11 +69,6 @@ void AddToGroupCommand::execute(System& system) const {
     if (isNewUserPart) {
         delete newParticipant;
         throw std::logic_error("User is already part of this group!");
-    }
-
-    if (!isCurrUserPart) {
-        delete newParticipant;
-        throw std::logic_error("You are not part of this group!");
     }
 
     if (!isCurrUserAdmin) {
