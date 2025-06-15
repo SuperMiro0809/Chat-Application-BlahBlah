@@ -12,8 +12,24 @@ ChatMessage::ChatMessage(
     std::time_t sentAt
 ): id(id), chatId(chatId), senderId(senderId), message(message), sentAt(sentAt) {}
 
+unsigned int ChatMessage::getId() const {
+    return id;
+}
+
 unsigned int ChatMessage::getChatId() const {
     return chatId;
+}
+
+unsigned int ChatMessage::getSenderId() const {
+    return senderId;
+}
+
+const String& ChatMessage::getMessage() const {
+    return message;
+}
+
+std::time_t ChatMessage::getSentAt() const {
+    return sentAt;
 }
 
 void ChatMessage::print() const {

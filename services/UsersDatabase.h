@@ -18,4 +18,6 @@ class UsersDatabase: public Database {
         User* getById(unsigned int id) const;
 
         bool isUsernameTaken(const String& username) const;
+
+        void removeUserById(unsigned int userId) const;
 };

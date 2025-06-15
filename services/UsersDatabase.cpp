@@ -359,3 +359,91 @@ bool UsersDatabase::isUsernameTaken(const String& username) const {
 
     return false;
 }
+
+void UsersDatabase::removeUserById(unsigned int userId) const {
+    std::ifstream input((dbName + ".txt").getElements());
+    std::ofstream tempText("temp_users.txt");
+
+    if (!input.is_open() || !tempText.is_open()) {
+        throw std::runtime_error("Error: could not open user database files.");
+    }
+
+    String line;
+    while (true) {
+        getline(input, line);
+
+        if (input.eof()) {
+            break;
+        }
+
+        std::stringstream ss(line.getElements());
+        String idStr, usernameStr, passwordStr, roleStr;
+
+        getline(ss, idStr, FIELD_DELIMITER);
+        getline(ss, usernameStr, FIELD_DELIMITER);
+        getline(ss, passwordStr, FIELD_DELIMITER);
+        getline(ss, roleStr);
+
+        unsigned int currId = std::atoi(idStr.getElements());
+
+        if (currId == userId) continue;
+
+        tempText << currId << FIELD_DELIMITER << usernameStr << FIELD_DELIMITER << passwordStr << FIELD_DELIMITER << roleStr << '\n';
+    }
+
+    input.close();
+    tempText.close();
+
+    std::remove((dbName + ".txt").getElements());
+    std::rename("temp_users.txt", (dbName + ".txt").getElements());
+
+    std::ifstream binIn((dbName + ".dat").getElements(), std::ios::binary);
+    std::ofstream binOut("temp_users.dat", std::ios::binary);
+
+    if (!binIn.is_open() || !binOut.is_open()) {
+        throw std::runtime_error("Error: could not open user binary database files.");
+    }
+
+    while (true) {
+        if (binIn.eof()) break;
+
+        unsigned int id;
+        binIn.read((char*)&id, sizeof(id));
+        if (binIn.eof()) break;
+
+        unsigned int usernameLen;
+        binIn.read((char*)&usernameLen, sizeof(usernameLen));
+        if (binIn.eof()) break;
+
+        char* usernameBuf = new char[usernameLen + 1];
+        binIn.read(usernameBuf, usernameLen);
+        usernameBuf[usernameLen] = '\0';
+
+        unsigned int passwordLen;
+        binIn.read((char*)&passwordLen, sizeof(passwordLen));
+        char* passwordBuf = new char[passwordLen + 1];
+        binIn.read(passwordBuf, passwordLen);
+        passwordBuf[passwordLen] = '\0';
+
+        int roleVal;
+        binIn.read((char*)&roleVal, sizeof(roleVal));
+
+        if (id != userId) {
+            binOut.write((char*)&id, sizeof(id));
+            binOut.write((char*)&usernameLen, sizeof(usernameLen));
+            binOut.write(usernameBuf, usernameLen);
+            binOut.write((char*)&passwordLen, sizeof(passwordLen));
+            binOut.write(passwordBuf, passwordLen);
+            binOut.write((char*)&roleVal, sizeof(roleVal));
+        }
+
+        delete[] usernameBuf;
+        delete[] passwordBuf;
+    }
+
+    binIn.close();
+    binOut.close();
+
+    std::remove((dbName + ".dat").getElements());
+    std::rename("temp_users.dat", (dbName + ".dat").getElements());
+}

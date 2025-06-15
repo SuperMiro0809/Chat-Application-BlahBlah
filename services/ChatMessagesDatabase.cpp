@@ -3,6 +3,7 @@
 #include <fstream>
 #include <stdexcept>
 #include "../models/ChatMessage.h"
+#include "../utils/Vector.hpp"
 
 void ChatMessagesDatabase::writeMessageToTextFile(unsigned int id, unsigned int chatId, unsigned int senderId, const String& message, std::time_t sentAt) const {
     ChatMessage msg(id, chatId, senderId, message, sentAt);
@@ -44,4 +45,46 @@ ChatMessage ChatMessagesDatabase::addNewMessage(unsigned int chatId, unsigned in
     writeMessageToBinaryFile(nextId, chatId, senderId, message, now);
 
     return ChatMessage(nextId, chatId, senderId, message, now);
+}
+
+void ChatMessagesDatabase::removeByUser(unsigned int userId) const {
+    Vector<ChatMessage> messages;
+    messages.loadFromFile(dbName.getElements());
+
+    std::ofstream textFile((dbName + ".txt").getElements());
+    std::ofstream binaryFile((dbName + ".dat").getElements(), std::ios::binary);
+
+    if (!textFile.is_open() || !binaryFile.is_open()) {
+        throw std::runtime_error("Error: could not open messages database for rewrite");
+    }
+
+    for (size_t i = 0; i < messages.getSize(); ++i) {
+        const ChatMessage& m = messages[i];
+
+        if (m.getSenderId() == userId) {
+            continue; // Skip all messages sent by this user
+        }
+
+        // Write to text
+        textFile << m << '\n';
+
+        // Write to binary
+        unsigned int id = m.getId();
+        unsigned int chatId = m.getChatId();
+        unsigned int senderId = m.getSenderId();
+
+        const char* msg = m.getMessage().getElements();
+        size_t msgLen = std::strlen(msg);
+        std::time_t sentAt = m.getSentAt();
+
+        binaryFile.write((const char*)&id, sizeof(id));
+        binaryFile.write((const char*)&chatId, sizeof(chatId));
+        binaryFile.write((const char*)&senderId, sizeof(senderId));
+        binaryFile.write((const char*)&msgLen, sizeof(msgLen));
+        binaryFile.write(msg, msgLen);
+        binaryFile.write((const char*)&sentAt, sizeof(sentAt));
+    }
+
+    textFile.close();
+    binaryFile.close();
 }

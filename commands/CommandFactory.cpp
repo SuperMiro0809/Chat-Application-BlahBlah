@@ -16,6 +16,7 @@
 #include "LeaveGroupCommand.h"
 #include "KickFromGroupCommand.h"
 #include "SetGroupAdminCommand.h"
+#include "DeleteUserCommand.h"
 
 Command* CommandFactory::create(const String& input) {
     std::stringstream ss(input.getElements());
@@ -97,6 +98,11 @@ Command* CommandFactory::create(const String& input) {
         ss >> std::ws >> username;
 
         return new SetGroupAdminCommand(chatId, username);
+    } else if (cmd == "delete-user") {
+        String username;
+        ss >> std::ws >> username;
+
+        return new DeleteUserCommand(username);
     }
 
     return nullptr;

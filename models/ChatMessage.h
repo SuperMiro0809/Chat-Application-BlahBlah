@@ -21,7 +21,15 @@ class ChatMessage {
             std::time_t sentAt
         );
 
+        unsigned int getId() const;
+
         unsigned int getChatId() const;
+
+        unsigned int getSenderId() const;
+
+        const String& getMessage() const;
+
+        std::time_t getSentAt() const;
 
         void print() const;
 

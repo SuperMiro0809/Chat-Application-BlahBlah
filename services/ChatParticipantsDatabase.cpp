@@ -130,3 +130,40 @@ void ChatParticipantsDatabase::updateParticipantRole(unsigned int chatId, unsign
         throw std::logic_error("Participant not found for update.");
     }
 }
+
+void ChatParticipantsDatabase::removeByUser(unsigned int userId) const {
+    Vector<ChatParticipant> participants;
+    participants.loadFromFile(dbName.getElements());
+
+    std::ofstream textFile((dbName + ".txt").getElements());
+    std::ofstream binaryFile((dbName + ".dat").getElements(), std::ios::binary);
+
+    if (!textFile.is_open() || !binaryFile.is_open()) {
+        throw std::runtime_error("Error: could not open participants database for rewrite");
+    }
+
+    for (size_t i = 0; i < participants.getSize(); ++i) {
+        const ChatParticipant& p = participants[i];
+
+        if (p.getUserId() == userId) {
+            continue;
+        }
+
+        textFile << p << '\n';
+
+        unsigned int id = p.getId();
+        unsigned int chatId = p.getChatId();
+        unsigned int uid = p.getUserId();
+        const char* type = p.getTypeStr();
+        unsigned int len = std::strlen(type);
+
+        binaryFile.write((const char*)&id, sizeof(id));
+        binaryFile.write((const char*)&chatId, sizeof(chatId));
+        binaryFile.write((const char*)&uid, sizeof(uid));
+        binaryFile.write((const char*)&len, sizeof(len));
+        binaryFile.write(type, len);
+    }
+
+    textFile.close();
+    binaryFile.close();
+}
