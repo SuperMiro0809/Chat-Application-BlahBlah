@@ -27,12 +27,44 @@ static ChatType parseChatType(const char* str) {
     return ChatType::DEFAULT;
 }
 
-Chat::Chat(): id(-1), type(ChatType::DEFAULT) {}
+void Chat::freeDynamic() {
+    delete messages;
+}
 
-Chat::Chat(unsigned int id, const String& name, ChatType type): id(id), name(name), type(type) {}
+void Chat::copyDynamic(const Chat& other) {
+    messages = new Vector(*other.messages);
+}
 
-Chat::Chat(unsigned int id, const String& name, const char* type): id(id), name(name) {
+Chat::Chat(): id(-1), type(ChatType::DEFAULT), messages(new Vector<ChatMessage>()) {}
+
+Chat::Chat(unsigned int id, const String& name, ChatType type):
+    id(id), name(name), type(type), messages(new Vector<ChatMessage>()) {}
+
+Chat::Chat(unsigned int id, const String& name, const char* type):
+    id(id), name(name), messages(new Vector<ChatMessage>()) {
     this->type = parseChatType(type);
+}
+
+Chat::Chat(const Chat& other) {
+    id = other.id;
+    name = other.name;
+    type = other.type;
+    copyDynamic(other);
+}
+
+Chat::~Chat() {
+    freeDynamic();
+}
+
+Chat &Chat::operator=(const Chat &other) {
+    if (this != &other) {
+        freeDynamic();
+        id = other.id;
+        name = other.name;
+        type = other.type;
+        copyDynamic(other);
+    }
+    return *this;
 }
 
 unsigned int Chat::getId() const {
@@ -41,6 +73,23 @@ unsigned int Chat::getId() const {
 
 ChatType Chat::getChatType() const {
     return type;
+}
+
+const Vector<ChatMessage>* Chat::getMessages() const {
+    return messages;
+}
+
+Vector<ChatMessage>* Chat::getMessages() {
+    return messages;
+}
+
+bool Chat::getAreMessagesLoaded() const {
+    return areMessagesLoaded;
+}
+
+void Chat::loadMessages() {
+    messages->loadFromFileByCriteria(MESSAGES_DB_NAME, id);
+    areMessagesLoaded = true;
 }
 
 std::ostream& operator<<(std::ostream& os, const Chat& chat) {

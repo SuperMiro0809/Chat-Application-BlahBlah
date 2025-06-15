@@ -36,10 +36,12 @@ void ChatMessagesDatabase::writeMessageToBinaryFile(unsigned int id, unsigned in
 
 ChatMessagesDatabase::ChatMessagesDatabase(const char* dbName): Database(dbName) {}
 
-void ChatMessagesDatabase::addNewMessage(unsigned int chatId, unsigned int senderId, const String& message) const {
+ChatMessage ChatMessagesDatabase::addNewMessage(unsigned int chatId, unsigned int senderId, const String& message) const {
     unsigned int nextId = autoIncrement();
     std::time_t now = std::time(nullptr);
 
     writeMessageToTextFile(nextId, chatId, senderId, message, now);
     writeMessageToBinaryFile(nextId, chatId, senderId, message, now);
+
+    return ChatMessage(nextId, chatId, senderId, message, now);
 }

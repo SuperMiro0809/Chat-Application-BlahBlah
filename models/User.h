@@ -34,6 +34,8 @@ class User {
 
         const Vector<Chat>& getChats() const;
 
+        Vector<Chat>& getChats();
+
         virtual UserRole getRole() const;
 
         virtual ~User() = default;

@@ -39,6 +39,8 @@ class Vector {
 
         const T& operator[](size_t index) const;
 
+        T& operator[](size_t index);
+
         void loadFromFile(const char* filename);
 
         void loadFromFileByCriteria(const char* filename, unsigned int filterId);
@@ -120,6 +122,15 @@ size_t Vector<T>::getSize() const {
 
 template<typename T>
 const T& Vector<T>::operator[](size_t index) const {
+    if (index >= size) {
+        throw std::out_of_range("Index out of range");
+    }
+
+    return data[index];
+}
+
+template<typename T>
+T& Vector<T>::operator[](size_t index) {
     if (index >= size) {
         throw std::out_of_range("Index out of range");
     }

@@ -31,6 +31,10 @@ const Vector<Chat>& User::getChats() const {
     return chats;
 }
 
+Vector<Chat>& User::getChats() {
+    return chats;
+}
+
 UserRole User::getRole() const{
     return UserRole::User;
 }

@@ -3,6 +3,7 @@
 #include "Database.h"
 
 #include <ctime>
+#include "../models/ChatMessage.h"
 
 class ChatMessagesDatabase: public Database {
     void writeMessageToTextFile(unsigned int id, unsigned int chatId, unsigned int senderId, const String& message, std::time_t sentAt) const;
@@ -12,5 +13,5 @@ class ChatMessagesDatabase: public Database {
     public:
         ChatMessagesDatabase(const char* dbName);
 
-        void addNewMessage(unsigned int chatId, unsigned int senderId, const String& message) const;
+        ChatMessage addNewMessage(unsigned int chatId, unsigned int senderId, const String& message) const;
 };
